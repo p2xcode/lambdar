@@ -1,0 +1,38 @@
+Package: r2lambda
+Type: Package
+Title: Deploy R Scripts as AWS Lambda Functions
+Version: 0.1.0
+Authors@R: 
+ c(person(given = "Teofil",
+             family = "Nakov",
+             role = c("aut", "cre"),
+             email = "teofiln@gmail.com")
+             )
+Description: The goal of `{r2lambda}` is to make it easier to go from an `R` script 
+    to a deployed AWS Lambda function. It does this by wrapping preexisting functionality
+    from the `{paws}` and `{lambdr}` packages.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    checkmate,
+    glue,
+    jsonlite,
+    lambdr,
+    logger,
+    magrittr,
+    paws,
+    rlang,
+    stevedore,
+    sys,
+    uuid
+Remotes: teofiln/stevedore
+RoxygenNote: 7.2.3
+Suggests: 
+    covr,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+URL: https://discindo.github.io/r2lambda/
