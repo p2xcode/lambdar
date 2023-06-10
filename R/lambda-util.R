@@ -378,7 +378,7 @@ create_lambda_exec_role <- function(tag) {
       logger::log_debug("[create_lambda_exec_role] role exists - reusing.")
       invisible(role_meta)
     },
-    error = {
+    error = function(e) {
         logger::log_debug("[create_lambda_exec_role] role does not exist - creating a new role.")
     }
   )
