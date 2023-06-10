@@ -166,7 +166,7 @@ test_lambda <- function(ecr_repo, image_tag = "latest", runtime_function = "lamb
 #' }
 #' @export
 deploy_lambda <-
-  function(ecr_repo, image_tag = "latest", runtime_function = "lambda.handler", set_aws_envvars = FALSE, ...) {
+  function(ecr_repo, image_tag = "latest", runtime_function = "lambda_handler", set_aws_envvars = FALSE, ...) {
     ## Inputs are validated by lower-level functions
 
     logger::log_info("[deploy_lambda] Pushing Docker image to AWS ECR. This may take a while.")
@@ -191,7 +191,7 @@ deploy_lambda <-
     logger::log_info("[deploy_lambda] Creating Lambda role and basic policy.")
     iam_lambda_role <- tryCatch(
       expr = {
-        create_lambda_exec_role(tag = paste(ecr_repo, image_tag, sep = "-"))
+        create_lambda_exec_role(tag = paste(ecr_repo, image_tag, runtime_function, sep = "-"))
       },
       error = function(e) {
         msg <- "Failed to create Lambda execution role in AWS IAM."
