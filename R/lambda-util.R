@@ -457,13 +457,12 @@ create_lambda_function <-
     expr = {
       lambda_service$get_function(FunctionName = runtime_function)
       logger::log_debug("[create_lambda_function] Function already exists.  Updating function configuration...")
-      logger::log_debug("[create_lambda_function] Creating lambda function.")
+      logger::log_debug("[create_lambda_function] Updating lambda function.")
       
       tryCatch(
         expr = {
           lambda_service$update_function_configuration(
             FunctionName = runtime_function,
-            PackageType = "Image",
             Role = lambda_role_arn,
             Environment = envvar_list,
             ImageConfig = list(EntryPoint=NULL, Command=runtime_function, WorkingDirectory=NULL),
