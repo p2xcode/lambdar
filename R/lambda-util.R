@@ -367,7 +367,14 @@ create_lambda_exec_role <- function(tag) {
   logger::log_debug("[create_lambda_exec_role] Getting Lambda role json.")
   role <- system.file("lambda-role.json", package = "r2lambda")
   role_string <- lambdr::as_stringified_json(jsonlite::fromJSON(role))
-  role_name <- paste(tag, ids::random_id(1,8), sep = "-")
+  role_name <- tag #paste(tag, ids::random_id(1,8), sep = "-")
+
+  logger::log_debug("[create_lambda_exec_role] Checking if role already exists.")
+  iam_service <- aws_connect("iam")
+  role_meta <- iam_service$get_role(RoleName = role_name)
+  if (role_meta$RoleName == tag) {
+    invisible(role_meta)
+  }
 
   logger::log_debug("[create_lambda_exec_role] Creating Lambda execution role.")
   iam_service <- aws_connect("iam")
