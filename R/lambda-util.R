@@ -458,53 +458,56 @@ create_lambda_function <-
       lambda_service$get_function(FunctionName = runtime_function)
       logger::log_debug("[create_lambda_function] Function already exists.  Updating function configuration...")
       logger::log_debug("[create_lambda_function] Updating lambda function.")
-      #update
-      tryCatch(
-        expr = {
-          lambda_service$update_function_configuration(
-            FunctionName = runtime_function,
-            Role = lambda_role_arn,
-            Environment = envvar_list,
-            ImageConfig = list(EntryPoint=NULL, Command=runtime_function, WorkingDirectory=NULL),
-            ...)
-          lambda_service$update_function_code(
-            FunctionName = runtime_function,
-            Code = list(ImageUri = glue::glue(paste("{ecr_image_uri}", image_tag, sep = ":"))),
-            ...)
-        },
-        error = function(e) {
-          msg <- paste("Failed to update function.", e$message)
-          logger::log_error(msg)
-          rlang::abort(msg)
-        }
-      )
+      mode <<- "update"
     },
     error = function(e) {
       logger::log_debug("[create_lambda_function] Function does not already exist.  Creating...")
       logger::log_debug("[create_lambda_function] Creating lambda function.")
-      #create
-      tryCatch(
-        expr = {
-          lambda_service$create_function(
-            FunctionName = runtime_function,
-            Code = list(ImageUri = glue::glue(paste("{ecr_image_uri}", image_tag, sep = ":"))),
-            PackageType = "Image",
-            Role = lambda_role_arn,
-            Environment = envvar_list,
-            ImageConfig = list(EntryPoint=NULL, Command=runtime_function, WorkingDirectory=NULL),
-            ...)
-        },
-        error = function(e) {
-          msg <- paste("Failed to create function.", e$message)
-          logger::log_error(msg)
-          rlang::abort(msg)
-        }
-      )   
+      mode <<- "create"
     }
   )
 
-
-
+  if (mode == "update") {
+    #update
+    tryCatch(
+      expr = {
+        lambda_service$update_function_configuration(
+          FunctionName = runtime_function,
+          Role = lambda_role_arn,
+          Environment = envvar_list,
+          ImageConfig = list(EntryPoint=NULL, Command=runtime_function, WorkingDirectory=NULL),
+          ...)
+        lambda_service$update_function_code(
+          FunctionName = runtime_function,
+          Code = list(ImageUri = glue::glue(paste("{ecr_image_uri}", image_tag, sep = ":"))),
+          ...)
+      },
+      error = function(e) {
+        msg <- paste("Failed to update function.", e$message)
+        logger::log_error(msg)
+        rlang::abort(msg)
+      }
+    )
+  } else {
+    #create
+    tryCatch(
+      expr = {
+        lambda_service$create_function(
+          FunctionName = runtime_function,
+          Code = list(ImageUri = glue::glue(paste("{ecr_image_uri}", image_tag, sep = ":"))),
+          PackageType = "Image",
+          Role = lambda_role_arn,
+          Environment = envvar_list,
+          ImageConfig = list(EntryPoint=NULL, Command=runtime_function, WorkingDirectory=NULL),
+          ...)
+      },
+      error = function(e) {
+        msg <- paste("Failed to create function.", e$message)
+        logger::log_error(msg)
+        rlang::abort(msg)
+      }
+    )
+  }
 
   logger::log_debug("[create_lambda_function] Done.")
   invisible(lambda)
