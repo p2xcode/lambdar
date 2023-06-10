@@ -376,7 +376,7 @@ create_lambda_exec_role <- function(tag) {
     expr = {
       role_meta <- iam_service$get_role(RoleName = role_name)
       logger::log_debug("[create_lambda_exec_role] role exists - reusing.")
-      invisible(role_meta)
+      return(role_meta)
     },
     error = function(e) {
         logger::log_debug("[create_lambda_exec_role] role does not exist - creating a new role.")
