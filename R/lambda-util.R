@@ -377,7 +377,7 @@ create_lambda_exec_role <- function(tag) {
   }
 
   logger::log_debug("[create_lambda_exec_role] Creating Lambda execution role.")
-  iam_service <- aws_connect("iam")
+  #iam_service <- aws_connect("iam")
   role_meta <- iam_service$create_role(
     RoleName = role_name,
     AssumeRolePolicyDocument = role_string
