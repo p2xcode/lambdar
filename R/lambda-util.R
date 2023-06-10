@@ -465,6 +465,8 @@ create_lambda_function <-
     }
   )
 
+  logger::log_debug(mode)
+
   if (mode == "update") {
     #update
     tryCatch(
