@@ -457,12 +457,10 @@ create_lambda_function <-
     expr = {
       lambda_service$get_function(FunctionName = runtime_function)
       logger::log_debug("[create_lambda_function] Function already exists.  Updating function configuration...")
-      logger::log_debug("[create_lambda_function] Updating lambda function.")
       mode <<- "update"
     },
     error = function(e) {
       logger::log_debug("[create_lambda_function] Function does not already exist.  Creating...")
-      logger::log_debug("[create_lambda_function] Creating lambda function.")
       mode <<- "create"
     }
   )
@@ -471,6 +469,7 @@ create_lambda_function <-
     #update
     tryCatch(
       expr = {
+        logger::log_debug("[create_lambda_function] Updating lambda function.")
         lambda_service$update_function_configuration(
           FunctionName = runtime_function,
           Role = lambda_role_arn,
@@ -492,6 +491,7 @@ create_lambda_function <-
     #create
     tryCatch(
       expr = {
+        logger::log_debug("[create_lambda_function] Creating lambda function.")
         lambda_service$create_function(
           FunctionName = runtime_function,
           Code = list(ImageUri = glue::glue(paste("{ecr_image_uri}", image_tag, sep = ":"))),
