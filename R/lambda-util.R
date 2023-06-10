@@ -381,6 +381,7 @@ create_lambda_exec_role <- function(tag) {
     error = {
         logger::log_debug("[create_lambda_exec_role] role does not exist - creating a new role.")
     }
+  )
 
   logger::log_debug("[create_lambda_exec_role] Creating Lambda execution role.")
   #iam_service <- aws_connect("iam")
