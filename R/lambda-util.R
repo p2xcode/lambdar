@@ -450,26 +450,62 @@ create_lambda_function <-
     )
   }
 
-  logger::log_debug("[create_lambda_function] Creating lambda function.")
   lambda_service <- aws_connect("lambda")
 
+  logger::log_debug("[create_lambda_function] Checking if function already exists")
   lambda <- tryCatch(
     expr = {
-      lambda_service$create_function(
-      FunctionName = runtime_function,
-      Code = list(ImageUri = glue::glue(paste("{ecr_image_uri}", image_tag, sep = ":"))),
-      PackageType = "Image",
-      Role = lambda_role_arn,
-      Environment = envvar_list,
-      ImageConfig = list(EntryPoint=NULL, Command=runtime_function, WorkingDirectory=NULL),
-      ...)
+      lambda_service$get_function(FunctionName = runtime_function)
+      logger::log_debug("[create_lambda_function] Function already exists.  Updating function configuration...")
+      logger::log_debug("[create_lambda_function] Creating lambda function.")
+      
+      tryCatch(
+        expr = {
+          lambda_service$update_function_configuration(
+            FunctionName = runtime_function,
+            PackageType = "Image",
+            Role = lambda_role_arn,
+            Environment = envvar_list,
+            ImageConfig = list(EntryPoint=NULL, Command=runtime_function, WorkingDirectory=NULL),
+            ...)
+          lambda_service$update_function_code(
+            FunctionName = runtime_function,
+            Code = list(ImageUri = glue::glue(paste("{ecr_image_uri}", image_tag, sep = ":"))),
+            ...)
+        },
+        error = function(e) {
+          msg <- paste("Failed to create function.", e$message)
+          logger::log_error(msg)
+          rlang::abort(msg)
+        }
+      )
     },
     error = function(e) {
-      msg <- paste("Failed to create function.", e$message)
-      logger::log_error(msg)
-      rlang::abort(msg)
+      logger::log_debug("[create_lambda_function] Function does not already exist.  Creating...")
+      logger::log_debug("[create_lambda_function] Creating lambda function.")
+      
+      tryCatch(
+        expr = {
+          lambda_service$create_function(
+            FunctionName = runtime_function,
+            Code = list(ImageUri = glue::glue(paste("{ecr_image_uri}", image_tag, sep = ":"))),
+            PackageType = "Image",
+            Role = lambda_role_arn,
+            Environment = envvar_list,
+            ImageConfig = list(EntryPoint=NULL, Command=runtime_function, WorkingDirectory=NULL),
+            ...)
+        },
+        error = function(e) {
+          msg <- paste("Failed to create function.", e$message)
+          logger::log_error(msg)
+          rlang::abort(msg)
+        }
+      )   
     }
   )
+
+
+
 
   logger::log_debug("[create_lambda_function] Done.")
   invisible(lambda)

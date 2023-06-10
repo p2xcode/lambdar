@@ -224,7 +224,7 @@ deploy_lambda <-
         )
       },
       error = function(e) {
-        msg <- "Failed to push Lambda Docker image to AWS ECR."
+        msg <- "Failed to create lambda function."
         logger::log_error(msg)
         rlang::abort(msg)
       }
