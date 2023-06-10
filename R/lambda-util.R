@@ -373,8 +373,12 @@ create_lambda_exec_role <- function(tag) {
   iam_service <- aws_connect("iam")
   role_meta <- iam_service$get_role(RoleName = role_name)
   if (role_meta$RoleName == tag) {
+    logger::log_debug("[create_lambda_exec_role] role exists - reusing.")
     invisible(role_meta)
   }
+
+  logger::log_debug("[create_lambda_exec_role] role does not exist - reusing.")
+
 
   logger::log_debug("[create_lambda_exec_role] Creating Lambda execution role.")
   #iam_service <- aws_connect("iam")
