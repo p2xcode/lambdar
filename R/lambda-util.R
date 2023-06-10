@@ -458,7 +458,7 @@ create_lambda_function <-
       lambda_service$get_function(FunctionName = runtime_function)
       logger::log_debug("[create_lambda_function] Function already exists.  Updating function configuration...")
       logger::log_debug("[create_lambda_function] Updating lambda function.")
-      
+      #update
       tryCatch(
         expr = {
           lambda_service$update_function_configuration(
@@ -473,7 +473,7 @@ create_lambda_function <-
             ...)
         },
         error = function(e) {
-          msg <- paste("Failed to create function.", e$message)
+          msg <- paste("Failed to update function.", e$message)
           logger::log_error(msg)
           rlang::abort(msg)
         }
@@ -482,7 +482,7 @@ create_lambda_function <-
     error = function(e) {
       logger::log_debug("[create_lambda_function] Function does not already exist.  Creating...")
       logger::log_debug("[create_lambda_function] Creating lambda function.")
-      
+      #create
       tryCatch(
         expr = {
           lambda_service$create_function(
