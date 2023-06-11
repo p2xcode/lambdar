@@ -453,45 +453,62 @@ create_lambda_function <-
   lambda_service <- aws_connect("lambda")
 
   logger::log_debug("[create_lambda_function] Checking if function already exists")
+  create_mode <<- ""
+
   lambda <- tryCatch(
     expr = {
       lambda_service$get_function(FunctionName = runtime_function)
       logger::log_debug("[create_lambda_function] Function already exists.  Updating function configuration...")
-      mode <<- "update"
+      create_mode <<- "update"
     },
     error = function(e) {
       logger::log_debug("[create_lambda_function] Function does not already exist.  Creating...")
-      mode <<- "create"
+      logger::log_debug("[create_lambda_function] TEST TEST TEST")
+      create_mode <<- "create"
+      logger::log_debug("[create_lambda_function] TEST TEST 2222")
     }
   )
 
-  logger::log_debug(mode)
+  logger::log_debug("[create_lambda_function] TEST TEST 3333")
 
-  if (mode == "update") {
+  if (create_mode == "update") {
     #update
-    tryCatch(
+    lambda <- tryCatch(
       expr = {
         logger::log_debug("[create_lambda_function] Updating lambda function.")
+        logger::log_debug("[create_lambda_function] Updating function configuration.")
         lambda_service$update_function_configuration(
           FunctionName = runtime_function,
           Role = lambda_role_arn,
           Environment = envvar_list,
           ImageConfig = list(EntryPoint=NULL, Command=runtime_function, WorkingDirectory=NULL),
           ...)
+
+      last_update_status <- ""
+      attempt <- 1
+      while(last_update_status != "Successful" && attempt < 30) {
+        Sys.sleep(2)
+        last_update_status <- lambda_service$get_function(runtime_function)[["Configuration"]][["LastUpdateStatus"]]
+        attempt <- attempt + 1        
+      }
+
+        logger::log_debug("[create_lambda_function] Updating function code.")
         lambda_service$update_function_code(
           FunctionName = runtime_function,
-          Code = list(ImageUri = glue::glue(paste("{ecr_image_uri}", image_tag, sep = ":"))),
+          ImageUri = glue::glue(paste("{ecr_image_uri}", image_tag, sep = ":")),
           ...)
       },
       error = function(e) {
-        msg <- paste("Failed to update function.", e$message)
+        msg <- paste("[create_lambda_function] Failed to update function.", e$message)
         logger::log_error(msg)
         rlang::abort(msg)
       }
     )
   } else {
     #create
-    tryCatch(
+    logger::log_debug("[create_lambda_function] Creating lambda function.")
+
+    lambda <- tryCatch(
       expr = {
         logger::log_debug("[create_lambda_function] Creating lambda function.")
         lambda_service$create_function(
@@ -504,7 +521,7 @@ create_lambda_function <-
           ...)
       },
       error = function(e) {
-        msg <- paste("Failed to create function.", e$message)
+        msg <- paste("[create_lambda_function] Failed to create function.", e$message)
         logger::log_error(msg)
         rlang::abort(msg)
       }

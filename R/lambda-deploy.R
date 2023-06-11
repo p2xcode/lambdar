@@ -12,7 +12,7 @@ build_lambda <-
   function(
     ecr_repo, 
     image_tag = "latest", 
-    runtime_function = "lambda.handler", 
+    runtime_function = "lambda_handler", 
     runtime_path = "./", 
     cran_dependencies = NULL, 
     github_dependencies = NULL, 
@@ -77,7 +77,7 @@ build_lambda <-
 #' }
 #'
 #' @export
-test_lambda <- function(ecr_repo, image_tag = "latest", runtime_function = "lambda.handler", payload = NULL) {
+test_lambda <- function(ecr_repo, image_tag = "latest", runtime_function = "lambda_handler", payload = NULL) {
 
   logger::log_info("[test_lambda] Converting payload list to json.")
   payload <- jsonlite::toJSON(payload, auto_unbox = TRUE)
@@ -224,7 +224,7 @@ deploy_lambda <-
         )
       },
       error = function(e) {
-        msg <- "Failed to create lambda function."
+        msg <- paste("[deploy_lambawsda] Failed to create lambda function.", e$message)
         logger::log_error(msg)
         rlang::abort(msg)
       }
@@ -245,6 +245,7 @@ deploy_lambda <-
         "[deploy_lambda] Created Lambda execution role with ARN `{iam_lambda_role$Role$Arn}`"
       )
     )
+    
     logger::log_warn(
       glue::glue(
         "[deploy_lambda] Created Lambda function `{lambda$FunctionName}` with ARN `{lambda$FunctionArn}`"
