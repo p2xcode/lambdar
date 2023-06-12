@@ -463,13 +463,10 @@ create_lambda_function <-
     },
     error = function(e) {
       logger::log_debug("[create_lambda_function] Function does not already exist.  Creating...")
-      logger::log_debug("[create_lambda_function] TEST TEST TEST")
       create_mode <<- "create"
-      logger::log_debug("[create_lambda_function] TEST TEST 2222")
     }
   )
 
-  logger::log_debug("[create_lambda_function] TEST TEST 3333")
 
   if (create_mode == "update") {
     #update
@@ -506,8 +503,6 @@ create_lambda_function <-
     )
   } else {
     #create
-    logger::log_debug("[create_lambda_function] Creating lambda function.")
-
     lambda <- tryCatch(
       expr = {
         logger::log_debug("[create_lambda_function] Creating lambda function.")
