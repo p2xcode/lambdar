@@ -140,22 +140,28 @@ create_lambda_dockerfile <-
       len = 1
     )
 
+    reuse_runtime_file <- TRUE
+    reuse_docker_file <- TRUE
+
     if (checkmate::test_directory_exists(folder)) {
       if (overwrite) {
         msg <- glue::glue("[create_lambda_dockerfile] Directory {folder} exists. Using it.")
         logger::log_info(msg)
 
+
         # checking that files exist
         if (!checkmate::test_file_exists(paste(folder, "runtime.R", sep = "/"))) {
-          msg <- glue::glue("[create_lambda_dockerfile] Can't access runtime script file {folder}.")
-          logger::log_error(msg)
-          rlang::abort(msg)
+          msg <- glue::glue("[create_lambda_dockerfile] Can't access runtime script file {folder}. Bringing vanilla version from r2lambda package")
+          reuse_runtime_file <- FALSE
+          #logger::log_error(msg)
+          #rlang::abort(msg)
         }
 
         if (!checkmate::test_file_exists(paste(folder, "Dockerfile", sep = "/"))) {
-          msg <- glue::glue("[create_lambda_dockerfile] Can't access Dockerfile {folder}.")
-          logger::log_error(msg)
-          rlang::abort(msg)
+          msg <- glue::glue("[create_lambda_dockerfile] Can't access Dockerfile {folder}.  Bringing vanilla version from r2lambda package")
+          reuse_docker_file <- FALSE
+          #logger::log_error(msg)
+          #rlang::abort(msg)
         }
       } else {
         msg <- glue::glue("[create_lambda_dockerfile] Directory {folder} exists. Please choose another name.")
@@ -204,13 +210,17 @@ create_lambda_dockerfile <-
 
     dir.exists(folder)
 
-    file.copy(runtime_path, folder)
-    file.rename(from = file.path(folder, basename(runtime_path)),
-                to = file.path(folder, "runtime.R"))
+    if (!reuse_runtime_file) {
+      file.copy(runtime_path, folder)
+      file.rename(from = file.path(folder, basename(runtime_path)),
+                  to = file.path(folder, "runtime.R"))
+    }
 
-    file.copy(docker_template, folder, recursive = FALSE)
-    file.rename(from = file.path(folder, basename(docker_template)),
-                to = file.path(folder, "Dockerfile"))
+    if (!reuse_docker_file) {
+      file.copy(docker_template, folder, recursive = FALSE)
+      file.rename(from = file.path(folder, basename(docker_template)),
+                  to = file.path(folder, "Dockerfile"))
+    }
 
     logger::log_debug("[create_lambda_dockerfile] Updating Dockerfile with dependencies and runtime info.")
 
