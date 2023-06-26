@@ -312,7 +312,7 @@ create_lambda_image <- function(folder, ecr_repo, image_tag) {
   logger::log_debug("[create_lambda_image] Building docker image.")
 
   docker_cli <- stevedore::docker_client()
-  docker_cli$image$build(context = folder, tag = paste(repo_uri, image_tag, sep = ":"))
+  docker_cli$image$build(context = folder, tag = paste(repo_uri, image_tag, sep = ":"), buildargs=jsonlite::toJSON(paste('{"GITHUB_PAT":"', Sys.getenv("GITHUB_PAT"),'""}',sep=""),auto_unbox = T))
 
   logger::log_debug("[create_lambda_image] Done.")
 }
