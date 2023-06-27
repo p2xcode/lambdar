@@ -233,7 +233,7 @@ create_lambda_dockerfile <-
     }
 
      if (!is.null(github_dependencies)) {
-      if (force_rebuild_cran_deps) {
+      if (force_rebuild_github_deps) {
         write("COPY marker_github /dev/null",
         file = file.path(folder, "Dockerfile"),
         append = TRUE)  
