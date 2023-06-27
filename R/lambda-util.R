@@ -169,8 +169,8 @@ create_lambda_dockerfile <-
       dir.create(folder)
     }
 
-    if (force_rebuild_cran_deps) system(paste("echo date >", file.path(folder, "marker_cran")))
-    if (force_rebuild_github_deps) system(paste("echo date >", file.path(folder, "marker_github")))
+    if (force_rebuild_cran_deps) system(paste("date >", file.path(folder, "marker_cran")))
+    if (force_rebuild_github_deps) system(paste("date >", file.path(folder, "marker_github")))
 
     checkmate::assert_character(
       x = runtime_function,
