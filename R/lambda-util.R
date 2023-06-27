@@ -71,7 +71,7 @@ install_github_deps_line <- function(github_deps) {
   if (!is.null(github_deps)) {
     logger::log_debug("[install_github_deps_line] github_deps exist.  Adding them to Dockerfile.")
     github_glued <- glue::glue_collapse(glue::single_quote(github_deps), sep = ", ")
-    glue::glue('RUN Rscript -e "remotes::install_github(c({github_glued}))"')
+    glue::glue('RUN Rscript -e "remotes::install_github(c({github_glued}), force=T)"')
   } else {
     logger::log_debug("[install_github_deps_line] github_deps do not exist.  Skipping...")
   }
