@@ -131,7 +131,7 @@ create_lambda_dockerfile <-
            cran_dependencies = NULL,
            force_rebuild_cran_deps = FALSE,
            github_dependencies = NULL,
-           force_rebuild_cran_deps = FALSE,
+           force_rebuild_github_deps = FALSE,
            overwrite = TRUE) {
 
     logger::log_debug("[create_lambda_dockerfile] Validating inputs.")
