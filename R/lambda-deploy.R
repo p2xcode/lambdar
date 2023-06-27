@@ -30,8 +30,8 @@ build_lambda <-
   logger::log_info("[build_lambda] Creating Dockerfile.")
   tryCatch(
     expr = {
-      if (force_rebuild_cran_deps) system(paste("echo date >", file.path(tdir, "marker_cran")))
-      if (force_rebuild_github_deps) system(paste("echo date >", file.path(tdir, "marker_github")))
+      if (force_rebuild_cran_deps) system(paste("echo date >", file.path(tdir, folder, "marker_cran")))
+      if (force_rebuild_github_deps) system(paste("echo date >", file.path(tdir, folder, "marker_github")))
       create_lambda_dockerfile(
         folder = folder,
         runtime_function = runtime_function,
