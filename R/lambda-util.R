@@ -128,8 +128,10 @@ create_lambda_dockerfile <-
   function(folder,
            runtime_function,
            runtime_path,
-           cran_dependencies,
-           github_dependencies,
+           cran_dependencies = NULL,
+           force_rebuild_cran_deps = FALSE,
+           github_dependencies = NULL,
+           force_rebuild_cran_deps = FALSE,
            overwrite = TRUE) {
 
     logger::log_debug("[create_lambda_dockerfile] Validating inputs.")
@@ -216,6 +218,11 @@ create_lambda_dockerfile <-
     logger::log_debug("[create_lambda_dockerfile] Updating Dockerfile with dependencies and runtime info.")
 
     if (!is.null(cran_dependencies)) {
+      if (force_rebuild_cran_deps) {
+        write("COPY marker_cran /dev/null",
+          file = file.path(folder, "Dockerfile"),
+          append = TRUE)  
+      }
       logger::log_debug("[create_lambda_dockerfile] cran_dependencies exist.  Adding them to Dockerfile.")  
       deps_string <- install_cran_deps_line(cran_deps = c(cran_dependencies))
       write(deps_string,
@@ -226,6 +233,12 @@ create_lambda_dockerfile <-
     }
 
      if (!is.null(github_dependencies)) {
+      if (force_rebuild_cran_deps) {
+        write("COPY marker_github /dev/null",
+        file = file.path(folder, "Dockerfile"),
+        append = TRUE)  
+      }
+
       logger::log_debug("[create_lambda_dockerfile] github_dependencies exist.  Adding them to Dockerfile.")  
       deps_string <- install_github_deps_line(github_deps = c(github_dependencies))
       write(deps_string,

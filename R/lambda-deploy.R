@@ -15,7 +15,9 @@ build_lambda <-
     runtime_function = "lambda_handler", 
     runtime_path = "./", 
     cran_dependencies = NULL, 
+    force_rebuild_cran_deps = FALSE,
     github_dependencies = NULL, 
+    force_rebuild_github_deps = FALSE,
     overwrite = TRUE) {
 
   logger::log_info("[build_lambda] Checking system dependencies.")
@@ -28,12 +30,16 @@ build_lambda <-
   logger::log_info("[build_lambda] Creating Dockerfile.")
   tryCatch(
     expr = {
+      if (force_rebuild_cran_deps) system("echo date > marker_cran")
+      if (force_rebuild_github_deps) system("echo date > marker_github")
       create_lambda_dockerfile(
         folder = folder,
         runtime_function = runtime_function,
         runtime_path = runtime_path,
         cran_dependencies = cran_dependencies,
+        force_rebuild_cran_deps = force_rebuild_cran_deps,
         github_dependencies = github_dependencies,
+        force_rebuild_github_deps = force_rebuild_github_deps,
         overwrite
       )
     },
