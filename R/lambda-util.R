@@ -495,7 +495,7 @@ create_lambda_function <-
           FunctionName = runtime_function,
           Role = lambda_role_arn,
           Environment = envvar_list,
-          ImageConfig = list(EntryPoint=NULL, Command=runtime_function, WorkingDirectory=NULL),
+          ImageConfig = list(EntryPoint=NULL, Command=NULL, WorkingDirectory=NULL),
           ...)
 
       last_update_status <- ""
@@ -529,7 +529,7 @@ create_lambda_function <-
           PackageType = "Image",
           Role = lambda_role_arn,
           Environment = envvar_list,
-          ImageConfig = list(EntryPoint=NULL, Command=runtime_function, WorkingDirectory=NULL),
+          ImageConfig = list(EntryPoint=NULL, Command=NULL, WorkingDirectory=NULL),
           ...)
       },
       error = function(e) {
